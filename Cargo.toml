@@ -1,5 +1,8 @@
 [package]
 name = "envchain"
+license = "MIT"
+authors = ["okkez <okkez000@gmail.com>"]
+description = "The Rust version of envchain, but support only Linux secret service."
 version = "0.1.0"
 edition = "2021"
 
