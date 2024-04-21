@@ -1,6 +1,6 @@
 use clap::{Parser, Subcommand};
 use rpassword::prompt_password;
-use secret_service::blocking::SecretService;
+use secret_service::blocking::{SecretService, Collection};
 use secret_service::EncryptionType;
 use serde::{Deserialize, Serialize};
 use std::fs::File;
@@ -76,14 +76,15 @@ fn main() {
 impl<'a> Cli {
     fn execute(&self) -> Result<(), Box<dyn Error>> {
         let ss = SecretService::connect(EncryptionType::Dh).unwrap();
+        let collection = ss.get_default_collection()?;
 
         match &self.command {
-            Some(Commands::Set { .. }) => {
+            Some(Commands::Set { namespace, env_keys }) => {
                 println!("Set passwords for keys.");
-                self.set_password_to_env_keys(&ss)?;
+                self.set_password_to_env_keys(&collection, namespace, env_keys)?;
             }
-            Some(Commands::Run { .. }) => {
-                self.run_command(&ss)?;
+            Some(Commands::Run { namespace, command }) => {
+                self.run_command(&collection, namespace, command)?;
             }
             Some(Commands::List {}) => {
                 self.list_namespace(&ss)?;
@@ -95,45 +96,41 @@ impl<'a> Cli {
                 self.import_secrets(&ss)?;
             }
             None => {
-                self.run_command(&ss)?;
+                if let Some(namespace) = &self.namespace {
+                    self.run_command(&collection, namespace, &self.args)?;
+                } else {
+                    eprintln!("Failed to get namespace");
+                }
             }
         }
         Ok(())
     }
 
-    fn set_password_to_env_keys(&self, ss: &SecretService<'a>) -> Result<(), Box<dyn Error>> {
-        if let Some(Commands::Set {
-            namespace,
-            env_keys,
-        }) = &self.command
-        {
-            let collection = ss.get_default_collection()?;
-            env_keys.iter().for_each(|env_key| {
-                if let Ok(password) = prompt_password(format!("{}: ", env_key)) {
-                    let properties = HashMap::from([
-                        ("key", env_key.as_str()),
-                        ("name", namespace.as_str()),
-                        ("xdg:schema", "envchain.EnvironmentVariable"),
-                    ]);
-                    let _ = collection.create_item(
-                        format!("{}.{}", namespace, env_key).as_str(),
-                        properties,
-                        password.as_bytes(),
-                        true,
-                        "text/plain",
-                    );
-                } else {
-                    eprintln!("Failed to read password for {}", env_key);
-                }
-            });
-        }
+    fn set_password_to_env_keys(&self, collection: &Collection<'a>, namespace: &String, env_keys: &Vec<String>) -> Result<(), Box<dyn Error>> {
+        env_keys.iter().for_each(|env_key| {
+            if let Ok(password) = prompt_password(format!("{}: ", env_key)) {
+                let properties = HashMap::from([
+                    ("key", env_key.as_str()),
+                    ("name", namespace.as_str()),
+                    ("xdg:schema", "envchain.EnvironmentVariable"),
+                ]);
+                let _ = collection.create_item(
+                    format!("{}.{}", namespace, env_key).as_str(),
+                    properties,
+                    password.as_bytes(),
+                    true,
+                    "text/plain",
+                );
+            } else {
+                eprintln!("Failed to read password for {}", env_key);
+            }
+        });
         Ok(())
     }
 
-    fn run_command(&self, ss: &SecretService<'a>) -> Result<(), Box<dyn Error>> {
-        let collection = ss.get_default_collection()?;
+    fn run_command(&self, collection: &Collection<'a>, namespace: &String, command: &Vec<String >) -> Result<(), Box<dyn Error>> {
         let properties = HashMap::from([
-            ("name", self.get_namespace()),
+            ("name", namespace.as_str()),
             ("xdg:schema", "envchain.EnvironmentVariable"),
         ]);
         let items = collection.search_items(properties)?;
@@ -142,30 +139,14 @@ impl<'a> Cli {
             .map(|item| {
                 let attributes = item.get_attributes().unwrap();
                 let name = attributes.get("key").unwrap().to_string();
+                item.ensure_unlocked().unwrap();
                 let secret = String::from_utf8(item.get_secret().unwrap()).unwrap();
                 (name, secret)
             })
             .collect();
-        let (exe, args) = if let Some(Commands::Run { command, .. }) = &self.command {
-            command.split_at(1)
-        } else {
-            self.args.split_at(1)
-        };
+        let (exe, args) = command.split_at(1);
         Command::new(exe[0].clone()).args(args).envs(envs).exec();
         Ok(())
-    }
-
-    fn get_namespace(&self) -> &str {
-        if let Some(Commands::Run { namespace, .. }) = &self.command {
-            namespace.as_str()
-        } else {
-            if let Some(namespace) = &self.namespace {
-                namespace.as_str()
-            } else {
-                eprintln!("Failed to get namespace");
-                "none"
-            }
-        }
     }
 
     fn list_namespace(&self, ss: &SecretService<'a>) -> Result<(), Box<dyn Error>> {
