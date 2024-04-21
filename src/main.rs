@@ -46,7 +46,7 @@ enum Commands {
     Export {
         /// The output file name
         #[arg(short, long)]
-        output: String,
+        output: Option<String>,
     },
     /// Import secrets from a file
     Import {
@@ -87,13 +87,13 @@ impl<'a> Cli {
                 self.run_command(&collection, namespace, command)?;
             }
             Some(Commands::List {}) => {
-                self.list_namespace(&ss)?;
+                self.list_namespace(&collection)?;
             }
-            Some(Commands::Export { .. }) => {
-                self.export_secrets(&ss)?;
+            Some(Commands::Export { output }) => {
+                self.export_secrets(&collection, output)?;
             }
-            Some(Commands::Import { .. }) => {
-                self.import_secrets(&ss)?;
+            Some(Commands::Import { input }) => {
+                self.import_secrets(&collection, input)?;
             }
             None => {
                 if let Some(namespace) = &self.namespace {
@@ -149,8 +149,7 @@ impl<'a> Cli {
         Ok(())
     }
 
-    fn list_namespace(&self, ss: &SecretService<'a>) -> Result<(), Box<dyn Error>> {
-        let collection = ss.get_default_collection()?;
+    fn list_namespace(&self, collection: &Collection<'a>) -> Result<(), Box<dyn Error>> {
         let properties = HashMap::from([("xdg:schema", "envchain.EnvironmentVariable")]);
         let items = collection.search_items(properties)?;
         let mut namespaces: Vec<String> = items
@@ -169,8 +168,7 @@ impl<'a> Cli {
         Ok(())
     }
 
-    fn export_secrets(&self, ss: &SecretService<'a>) -> Result<(), Box<dyn Error>> {
-        let collection = ss.get_default_collection()?;
+    fn export_secrets(&self, collection: &Collection<'a>, output: &Option<String>) -> Result<(), Box<dyn Error>> {
         let properties = HashMap::from([("xdg:schema", "envchain.EnvironmentVariable")]);
         let items = collection.search_items(properties)?;
         let entries = Entries {
@@ -187,8 +185,8 @@ impl<'a> Cli {
                 .collect(),
         };
         let toml = toml::to_string(&entries).unwrap();
-        if let Some(Commands::Export { output, .. }) = &self.command {
-            let mut io = File::create(output)?;
+        if let Some(path) = output {
+            let mut io = File::create(path)?;
             write!(io, "{}", toml)?;
         } else {
             println!("{}", toml);
@@ -196,30 +194,27 @@ impl<'a> Cli {
         Ok(())
     }
 
-    fn import_secrets(&self, ss: &SecretService<'a>) -> Result<(), Box<dyn Error>> {
-        let collection = ss.get_default_collection()?;
-        if let Some(Commands::Import { input, .. }) = &self.command {
-            let mut io = File::open(input)?;
-            let mut toml = String::new();
-            io.read_to_string(&mut toml)?;
-            let entries: Result<Entries, toml::de::Error> = toml::from_str(toml.as_str());
-            match entries {
-                Ok(es) => es.entries.iter().for_each(|entry| {
-                    let properties = HashMap::from([
-                        ("key", entry.key.as_str()),
-                        ("name", entry.name.as_str()),
-                        ("xdg:schema", "envchain.EnvironmentVariable"),
-                    ]);
-                    let _ = collection.create_item(
-                        format!("{}.{}", entry.name, entry.key).as_str(),
-                        properties,
-                        entry.value.as_bytes(),
-                        true,
-                        "text/plain",
-                    );
-                }),
-                Err(e) => eprintln!("{}", e),
-            }
+    fn import_secrets(&self, collection: &Collection<'a>, input: &String) -> Result<(), Box<dyn Error>> {
+        let mut io = File::open(input)?;
+        let mut toml = String::new();
+        io.read_to_string(&mut toml)?;
+        let entries: Result<Entries, toml::de::Error> = toml::from_str(toml.as_str());
+        match entries {
+            Ok(es) => es.entries.iter().for_each(|entry| {
+                let properties = HashMap::from([
+                    ("key", entry.key.as_str()),
+                    ("name", entry.name.as_str()),
+                    ("xdg:schema", "envchain.EnvironmentVariable"),
+                ]);
+                let _ = collection.create_item(
+                    format!("{}.{}", entry.name, entry.key).as_str(),
+                    properties,
+                    entry.value.as_bytes(),
+                    true,
+                    "text/plain",
+                );
+            }),
+            Err(e) => eprintln!("{}", e),
         }
         Ok(())
     }
