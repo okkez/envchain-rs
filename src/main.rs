@@ -1,6 +1,6 @@
 use clap::{Parser, Subcommand};
 use rpassword::prompt_password;
-use secret_service::blocking::{SecretService, Collection};
+use secret_service::blocking::{Collection, SecretService};
 use secret_service::EncryptionType;
 use serde::{Deserialize, Serialize};
 use std::fs::File;
@@ -79,7 +79,10 @@ impl<'a> Cli {
         let collection = ss.get_default_collection()?;
 
         match &self.command {
-            Some(Commands::Set { namespace, env_keys }) => {
+            Some(Commands::Set {
+                namespace,
+                env_keys,
+            }) => {
                 println!("Set passwords for keys.");
                 self.set_password_to_env_keys(&collection, namespace, env_keys)?;
             }
@@ -106,7 +109,12 @@ impl<'a> Cli {
         Ok(())
     }
 
-    fn set_password_to_env_keys(&self, collection: &Collection<'a>, namespace: &String, env_keys: &Vec<String>) -> Result<(), Box<dyn Error>> {
+    fn set_password_to_env_keys(
+        &self,
+        collection: &Collection<'a>,
+        namespace: &String,
+        env_keys: &Vec<String>,
+    ) -> Result<(), Box<dyn Error>> {
         env_keys.iter().for_each(|env_key| {
             if let Ok(password) = prompt_password(format!("{}: ", env_key)) {
                 let properties = HashMap::from([
@@ -128,7 +136,12 @@ impl<'a> Cli {
         Ok(())
     }
 
-    fn run_command(&self, collection: &Collection<'a>, namespace: &String, command: &Vec<String >) -> Result<(), Box<dyn Error>> {
+    fn run_command(
+        &self,
+        collection: &Collection<'a>,
+        namespace: &String,
+        command: &Vec<String>,
+    ) -> Result<(), Box<dyn Error>> {
         let properties = HashMap::from([
             ("name", namespace.as_str()),
             ("xdg:schema", "envchain.EnvironmentVariable"),
@@ -168,7 +181,11 @@ impl<'a> Cli {
         Ok(())
     }
 
-    fn export_secrets(&self, collection: &Collection<'a>, output: &Option<String>) -> Result<(), Box<dyn Error>> {
+    fn export_secrets(
+        &self,
+        collection: &Collection<'a>,
+        output: &Option<String>,
+    ) -> Result<(), Box<dyn Error>> {
         let properties = HashMap::from([("xdg:schema", "envchain.EnvironmentVariable")]);
         let items = collection.search_items(properties)?;
         let entries = Entries {
@@ -194,7 +211,11 @@ impl<'a> Cli {
         Ok(())
     }
 
-    fn import_secrets(&self, collection: &Collection<'a>, input: &String) -> Result<(), Box<dyn Error>> {
+    fn import_secrets(
+        &self,
+        collection: &Collection<'a>,
+        input: &String,
+    ) -> Result<(), Box<dyn Error>> {
         let mut io = File::open(input)?;
         let mut toml = String::new();
         io.read_to_string(&mut toml)?;

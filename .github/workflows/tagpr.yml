@@ -1,0 +1,33 @@
+name: tagpr
+on:
+  push:
+    branches: ["main"]
+jobs:
+  tagpr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Songmu/tagpr@v1
+        id: tagpr
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-and-upload:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        include:
+          - build: linux
+            os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - build: linux
+            os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+
+    steps:
+      - uses: ./.github/actions/release
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUST_TARGET: ${{ matrix.target }}
+        if: "steps.tagpr.outputs.tag != ''"

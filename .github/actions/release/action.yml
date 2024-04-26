@@ -1,0 +1,29 @@
+name: Release
+
+inputs:
+  GITHUB_TOKEN:
+    description: GitHub token
+    required: true
+  RUST_TARGET:
+    description: target
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout sources
+      uses: actions/checkout@v4
+    - name: Install stable toolchain
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        targets: ${{ inputs.MATRIX_TARGET }}
+    - uses: Swatinem/rust-cache@v2
+      with:
+        prefix-key: ${{ inputs.RUST_TARGET }}
+    - uses: taiki-e/upload-rust-binary-action@v1
+      with:
+        bin: envchain
+        target: ${{ inputs.RUST_TARGET }}
+        archive: $bin-$tag-$target
+        tar: unix
+        token: ${{ inputs.GITHUB_TOKEN }}
