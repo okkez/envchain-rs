@@ -9,10 +9,28 @@ jobs:
       tagpr_tag: steps.tagpr.outputs.tag
     steps:
       - uses: actions/checkout@v4
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
       - uses: Songmu/tagpr@v1
         id: tagpr
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Edit Cargo.toml
+        run: |
+          set -ex
+          tag=${{ steps.tagpr.outputs.tag }}
+          version=$(echo ${tag} | sed -e "s/v//")
+          if [ $(yq e ".package.version" Cargo.toml) != "${version}" ]; then
+            cargo set-version ${version}
+            git config --local user.email github-actions[bot]@users.noreply.github.com
+            git config --local user.name github-actions[bot]
+            git diff
+            git add Cargo.toml
+            git commit -m "tagpr: Update version"
+          else
+            echo "Skipped"
+          fi
 
   build-and-upload:
     runs-on: ubuntu-latest
