@@ -5,6 +5,8 @@ on:
 jobs:
   tagpr:
     runs-on: ubuntu-latest
+    outputs:
+      tagpr_tag: steps.tagpr.outputs.tag
     steps:
       - uses: actions/checkout@v4
       - uses: Songmu/tagpr@v1
@@ -32,4 +34,4 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RUST_TARGET: ${{ matrix.target }}
-        if: "steps.tagpr.outputs.tag != ''"
+        if: "needs.tagpr.ouputs.tagpr_tag != ''"
