@@ -1,5 +1,7 @@
 # Changelog
 
+## [v0.1.3](https://github.com/okkez/envchain-rs/compare/v0.1.2...v0.1.3) - 2024-05-01
+
 ## [v0.1.1](https://github.com/okkez/envchain-rs/compare/v0.1.0...v0.1.1) - 2024-04-26
 ### Other changes
 - Introduce tagpr by @okkez in https://github.com/okkez/envchain-rs/pull/1
