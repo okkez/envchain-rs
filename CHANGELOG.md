@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.4](https://github.com/okkez/envchain-rs/compare/v0.1.3...v0.1.4) - 2024-05-10
+
+### Other
+- Merge pull request [#23](https://github.com/okkez/envchain-rs/pull/23) from okkez/support-comma-separated-namespace
+
 ## [0.1.3](https://github.com/okkez/envchain-rs/compare/v0.1.2...v0.1.3) - 2024-05-10
 
 ### Fixed
