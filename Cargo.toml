@@ -5,6 +5,8 @@ authors = ["okkez <okkez000@gmail.com>"]
 description = "The Rust version of envchain, but support only Linux secret service."
 version = "0.1.4"
 edition = "2021"
+repository = "https://github.com/okkez/envchain-rs"
+homepage = "https://github.com/okkez/envchain-rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
