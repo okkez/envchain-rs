@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.5](https://github.com/okkez/envchain-rs/compare/v0.1.4...v0.1.5) - 2024-05-10
+
+### Other
+- change archive name
+- add metadata for cargo binstall
+
 ## [0.1.4](https://github.com/okkez/envchain-rs/compare/v0.1.3...v0.1.4) - 2024-05-10
 
 ### Other
