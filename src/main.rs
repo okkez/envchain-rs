@@ -149,12 +149,11 @@ impl<'a> Cli {
     }
 
     fn build_envs(&self, collection: &Collection<'a>, namespace: &str) -> HashMap<String, String> {
-        namespace.split(",")
+        namespace
+            .split(",")
             .flat_map(|n| {
-                let properties = HashMap::from([
-                    ("name", n),
-                    ("xdg:schema", "envchain.EnvironmentVariable"),
-                ]);
+                let properties =
+                    HashMap::from([("name", n), ("xdg:schema", "envchain.EnvironmentVariable")]);
                 let items = match collection.search_items(properties) {
                     Ok(items) => items,
                     Err(e) => {
@@ -165,11 +164,12 @@ impl<'a> Cli {
                 items
                     .iter()
                     .map(|item| {
-                    let attributes = item.get_attributes().unwrap();
-                    let name = attributes.get("key").unwrap().to_string();
-                    let secret = String::from_utf8(item.get_secret().unwrap()).unwrap();
-                    (name, secret)
-                }).collect::<HashMap<String, String>>()
+                        let attributes = item.get_attributes().unwrap();
+                        let name = attributes.get("key").unwrap().to_string();
+                        let secret = String::from_utf8(item.get_secret().unwrap()).unwrap();
+                        (name, secret)
+                    })
+                    .collect::<HashMap<String, String>>()
             })
             .collect()
     }
