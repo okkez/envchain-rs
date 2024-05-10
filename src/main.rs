@@ -150,7 +150,7 @@ impl<'a> Cli {
 
     fn build_envs(&self, collection: &Collection<'a>, namespace: &str) -> HashMap<String, String> {
         namespace
-            .split(",")
+            .split(',')
             .flat_map(|n| {
                 let properties =
                     HashMap::from([("name", n), ("xdg:schema", "envchain.EnvironmentVariable")]);
