@@ -142,24 +142,36 @@ impl<'a> Cli {
         namespace: &String,
         command: &Vec<String>,
     ) -> Result<(), Box<dyn Error>> {
-        let properties = HashMap::from([
-            ("name", namespace.as_str()),
-            ("xdg:schema", "envchain.EnvironmentVariable"),
-        ]);
-        let items = collection.search_items(properties)?;
-        let envs: HashMap<String, String> = items
-            .iter()
-            .map(|item| {
-                let attributes = item.get_attributes().unwrap();
-                let name = attributes.get("key").unwrap().to_string();
-                item.ensure_unlocked().unwrap();
-                let secret = String::from_utf8(item.get_secret().unwrap()).unwrap();
-                (name, secret)
-            })
-            .collect();
+        let envs = self.build_envs(collection, namespace);
         let (exe, args) = command.split_at(1);
         Command::new(exe[0].clone()).args(args).envs(envs).exec();
         Ok(())
+    }
+
+    fn build_envs(&self, collection: &Collection<'a>, namespace: &str) -> HashMap<String, String> {
+        namespace
+            .split(',')
+            .flat_map(|n| {
+                let properties =
+                    HashMap::from([("name", n), ("xdg:schema", "envchain.EnvironmentVariable")]);
+                let items = match collection.search_items(properties) {
+                    Ok(items) => items,
+                    Err(e) => {
+                        eprintln!("{:?}", e);
+                        vec![]
+                    }
+                };
+                items
+                    .iter()
+                    .map(|item| {
+                        let attributes = item.get_attributes().unwrap();
+                        let name = attributes.get("key").unwrap().to_string();
+                        let secret = String::from_utf8(item.get_secret().unwrap()).unwrap();
+                        (name, secret)
+                    })
+                    .collect::<HashMap<String, String>>()
+            })
+            .collect()
     }
 
     fn list_namespace(&self, collection: &Collection<'a>) -> Result<(), Box<dyn Error>> {
