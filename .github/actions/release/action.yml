@@ -24,6 +24,6 @@ runs:
       with:
         bin: envchain
         target: ${{ inputs.RUST_TARGET }}
-        archive: $bin-$tag-$target
+        archive: $bin-rs-$target-$tag
         tar: unix
         token: ${{ inputs.GITHUB_TOKEN }}

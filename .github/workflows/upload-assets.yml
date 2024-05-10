@@ -49,5 +49,6 @@ jobs:
         with:
           bin: envchain
           target: ${{ matrix.target }}
+          archive: $bin-rs-$target-$tag
           tar: all
           token: ${{ secrets.GITHUB_TOKEN }}
