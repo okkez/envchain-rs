@@ -112,14 +112,14 @@ impl<'a> Cli {
     fn set_password_to_env_keys(
         &self,
         collection: &Collection<'a>,
-        namespace: &String,
-        env_keys: &Vec<String>,
+        namespace: &str,
+        env_keys: &[String],
     ) -> Result<(), Box<dyn Error>> {
         env_keys.iter().for_each(|env_key| {
             if let Ok(password) = prompt_password(format!("{}: ", env_key)) {
                 let properties = HashMap::from([
                     ("key", env_key.as_str()),
-                    ("name", namespace.as_str()),
+                    ("name", namespace),
                     ("xdg:schema", "envchain.EnvironmentVariable"),
                 ]);
                 let _ = collection.create_item(
@@ -139,8 +139,8 @@ impl<'a> Cli {
     fn run_command(
         &self,
         collection: &Collection<'a>,
-        namespace: &String,
-        command: &Vec<String>,
+        namespace: &str,
+        command: &[String],
     ) -> Result<(), Box<dyn Error>> {
         let envs = self.build_envs(collection, namespace);
         let (exe, args) = command.split_at(1);
@@ -226,7 +226,7 @@ impl<'a> Cli {
     fn import_secrets(
         &self,
         collection: &Collection<'a>,
-        input: &String,
+        input: &str,
     ) -> Result<(), Box<dyn Error>> {
         let mut io = File::open(input)?;
         let mut toml = String::new();
