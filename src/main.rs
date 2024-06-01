@@ -256,9 +256,10 @@ impl<'a> Cli {
         let mut io = File::open(input)?;
         let mut toml = String::new();
         io.read_to_string(&mut toml)?;
-        let entries: Result<Entries, toml::de::Error> = toml::from_str(toml.as_str());
-        match entries {
-            Ok(es) => es.entries.iter().for_each(|entry| {
+        let entries: Entries = toml::from_str(toml.as_str())?;
+        entries.entries
+            .iter()
+            .for_each(|entry| {
                 let properties = HashMap::from([
                     ("key", entry.key.as_str()),
                     ("name", entry.name.as_str()),
@@ -271,9 +272,7 @@ impl<'a> Cli {
                     true,
                     "text/plain",
                 );
-            }),
-            Err(e) => bail!("{}", e),
-        }
+            });
         Ok(())
     }
 }
