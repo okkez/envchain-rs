@@ -1,13 +1,15 @@
-use clap::{Parser, Subcommand};
+#[allow(unused_imports)]
+use anyhow::{anyhow, bail, Context, Result};
+use clap::{CommandFactory, Parser, Subcommand};
 use rpassword::prompt_password;
 use secret_service::blocking::{Collection, SecretService};
 use secret_service::EncryptionType;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::{Read, Write};
 use std::os::unix::process::CommandExt;
 use std::process::Command;
-use std::{collections::HashMap, error::Error};
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -70,12 +72,16 @@ struct Entry {
 
 fn main() {
     let cli = Cli::parse();
-    cli.execute().unwrap();
+    if let Err(e) = cli.execute() {
+        eprintln!("{:?}\n", e);
+        Cli::command().print_help().unwrap();
+        std::process::exit(1);
+    }
 }
 
 impl<'a> Cli {
-    fn execute(&self) -> Result<(), Box<dyn Error>> {
-        let ss = SecretService::connect(EncryptionType::Dh).unwrap();
+    fn execute(&self) -> Result<()> {
+        let ss = SecretService::connect(EncryptionType::Dh)?;
         let collection = ss.get_default_collection()?;
 
         match &self.command {
@@ -102,7 +108,7 @@ impl<'a> Cli {
                 if let Some(namespace) = &self.namespace {
                     self.run_command(&collection, namespace, &self.args)?;
                 } else {
-                    eprintln!("Failed to get namespace");
+                    bail!("Failed to get namespace");
                 }
             }
         }
@@ -114,7 +120,7 @@ impl<'a> Cli {
         collection: &Collection<'a>,
         namespace: &str,
         env_keys: &[String],
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<()> {
         env_keys.iter().for_each(|env_key| {
             if let Ok(password) = prompt_password(format!("{}: ", env_key)) {
                 let properties = HashMap::from([
@@ -141,49 +147,65 @@ impl<'a> Cli {
         collection: &Collection<'a>,
         namespace: &str,
         command: &[String],
-    ) -> Result<(), Box<dyn Error>> {
-        let envs = self.build_envs(collection, namespace);
+    ) -> Result<()> {
+        let envs = self.build_envs(collection, namespace)?;
+        if envs.is_empty() {
+            bail!("No environment variables found in the namespace: `{}`", namespace);
+        }
         let (exe, args) = command.split_at(1);
         Command::new(exe[0].clone()).args(args).envs(envs).exec();
         Ok(())
     }
 
-    fn build_envs(&self, collection: &Collection<'a>, namespace: &str) -> HashMap<String, String> {
-        namespace
+    fn build_envs(
+        &self,
+        collection: &Collection<'a>,
+        namespace: &str,
+    ) -> Result<HashMap<String, String>> {
+        // namespace を , で分割して、それぞれの namespace から env を取得する
+        let envs = namespace
             .split(',')
             .flat_map(|n| {
                 let properties =
                     HashMap::from([("name", n), ("xdg:schema", "envchain.EnvironmentVariable")]);
-                let items = match collection.search_items(properties) {
-                    Ok(items) => items,
-                    Err(e) => {
-                        eprintln!("{:?}", e);
-                        vec![]
-                    }
-                };
+                let items =  collection.search_items(properties).context("Unable to search items")?;
                 items
                     .iter()
                     .map(|item| {
-                        let attributes = item.get_attributes().unwrap();
-                        let name = attributes.get("key").unwrap().to_string();
-                        let secret = String::from_utf8(item.get_secret().unwrap()).unwrap();
-                        (name, secret)
+                        let attributes =
+                            item.get_attributes().context("Unable to get attributes")?;
+                        let name = attributes
+                            .get("key")
+                            .context("Unable to get key")?
+                            .to_string();
+                        let secret =
+                            String::from_utf8(item.get_secret().context("Unable to get secret")?)
+                                .context("Unable to convert secret to String")?;
+                        Ok((name, secret))
                     })
-                    .collect::<HashMap<String, String>>()
+                    .collect::<Result<HashMap<String, String>>>()
             })
-            .collect()
+            .fold(HashMap::new(), |mut acc, env| {
+                acc.extend(env);
+                acc
+            });
+        Ok(envs)
     }
 
-    fn list_namespace(&self, collection: &Collection<'a>) -> Result<(), Box<dyn Error>> {
+    fn list_namespace(&self, collection: &Collection<'a>) -> Result<()> {
         let properties = HashMap::from([("xdg:schema", "envchain.EnvironmentVariable")]);
         let items = collection.search_items(properties)?;
         let mut namespaces: Vec<String> = items
             .iter()
             .map(|item| {
-                let attributes = item.get_attributes().unwrap();
-                attributes.get("name").unwrap().to_string()
+                let attributes = item.get_attributes().context("Unable to get attributes")?;
+                Ok(attributes
+                    .get("name")
+                    .context("Unable to get name")?
+                    .to_string())
             })
-            .collect();
+            .collect::<Result<Vec<String>>>()?;
+
         namespaces.sort();
         namespaces.dedup();
         namespaces
@@ -193,27 +215,29 @@ impl<'a> Cli {
         Ok(())
     }
 
-    fn export_secrets(
-        &self,
-        collection: &Collection<'a>,
-        output: &Option<String>,
-    ) -> Result<(), Box<dyn Error>> {
+    fn export_secrets(&self, collection: &Collection<'a>, output: &Option<String>) -> Result<()> {
         let properties = HashMap::from([("xdg:schema", "envchain.EnvironmentVariable")]);
         let items = collection.search_items(properties)?;
         let entries = Entries {
             entries: items
                 .iter()
                 .map(|item| {
-                    let attributes = item.get_attributes().unwrap();
-                    Entry {
-                        name: attributes.get("name").unwrap().to_string(),
-                        key: attributes.get("key").unwrap().to_string(),
-                        value: String::from_utf8(item.get_secret().unwrap()).unwrap(),
-                    }
+                    let attributes = item.get_attributes()?;
+                    Ok(Entry {
+                        name: attributes
+                            .get("name")
+                            .with_context(|| format!("Unable to get name: {:?}", attributes))?
+                            .to_string(),
+                        key: attributes
+                            .get("key")
+                            .with_context(|| format!("Unable to get key: {:?}", attributes))?
+                            .to_string(),
+                        value: String::from_utf8(item.get_secret()?)?,
+                    })
                 })
-                .collect(),
+                .collect::<Result<Vec<_>>>()?,
         };
-        let toml = toml::to_string(&entries).unwrap();
+        let toml = toml::to_string(&entries)?;
         if let Some(path) = output {
             let mut io = File::create(path)?;
             write!(io, "{}", toml)?;
@@ -223,11 +247,7 @@ impl<'a> Cli {
         Ok(())
     }
 
-    fn import_secrets(
-        &self,
-        collection: &Collection<'a>,
-        input: &str,
-    ) -> Result<(), Box<dyn Error>> {
+    fn import_secrets(&self, collection: &Collection<'a>, input: &str) -> Result<()> {
         let mut io = File::open(input)?;
         let mut toml = String::new();
         io.read_to_string(&mut toml)?;
@@ -247,7 +267,7 @@ impl<'a> Cli {
                     "text/plain",
                 );
             }),
-            Err(e) => eprintln!("{}", e),
+            Err(e) => bail!("{}", e),
         }
         Ok(())
     }

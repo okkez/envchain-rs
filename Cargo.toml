@@ -23,6 +23,7 @@ secret-service = { version = "3", features = ["rt-tokio-crypto-rust"] }
 rpassword = "7"
 serde = { version = "1.0.200", features = ["derive"] }
 toml = { version = "0.8" }
+anyhow = "1.0.86"
 
 [[bin]]
 name = "envchain"
