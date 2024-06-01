@@ -150,7 +150,10 @@ impl<'a> Cli {
     ) -> Result<()> {
         let envs = self.build_envs(collection, namespace)?;
         if envs.is_empty() {
-            bail!("No environment variables found in the namespace: `{}`", namespace);
+            bail!(
+                "No environment variables found in the namespace: `{}`",
+                namespace
+            );
         }
         let (exe, args) = command.split_at(1);
         Command::new(exe[0].clone()).args(args).envs(envs).exec();
@@ -168,7 +171,9 @@ impl<'a> Cli {
             .flat_map(|n| {
                 let properties =
                     HashMap::from([("name", n), ("xdg:schema", "envchain.EnvironmentVariable")]);
-                let items =  collection.search_items(properties).context("Unable to search items")?;
+                let items = collection
+                    .search_items(properties)
+                    .context("Unable to search items")?;
                 items
                     .iter()
                     .map(|item| {
