@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.6](https://github.com/okkez/envchain-rs/compare/v0.1.5...v0.1.6) - 2024-06-06
+
+### Fixed
+- *(deps)* update rust crate toml to v0.8.14
+- *(deps)* update rust crate serde to v1.0.203
+- clippy warnings
+
+### Other
+- cargo fmt
+- remove redundant code
+- cargo fmt
+- improve error handling
+
 ## [0.1.5](https://github.com/okkez/envchain-rs/compare/v0.1.4...v0.1.5) - 2024-05-10
 
 ### Other
