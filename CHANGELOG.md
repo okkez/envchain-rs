@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.9](https://github.com/okkez/envchain-rs/compare/v0.1.8...v0.1.9) - 2025-04-11
+
+### Fixed
+
+- *(deps)* pin GitHub Actions exclude dtolnay/rust-toolchain
+
+### Other
+
+- Merge pull request #49 from okkez/renovate/clap-4.x-lockfile
+- *(deps)* update actions/create-github-app-token action to v2
+
 ## [0.1.8](https://github.com/okkez/envchain-rs/compare/v0.1.7...v0.1.8) - 2025-02-21
 
 ### Other
