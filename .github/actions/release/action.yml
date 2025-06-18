@@ -20,7 +20,7 @@ runs:
     - uses: Swatinem/rust-cache@9d47c6ad4b02e050fd481d890b2ea34778fd09d6 # v2.7.8
       with:
         prefix-key: ${{ inputs.RUST_TARGET }}
-    - uses: taiki-e/upload-rust-binary-action@db101489b509ad1c7acce163e118eb36a1650f98 # v1.26.0
+    - uses: taiki-e/upload-rust-binary-action@3962470d6e7f1993108411bc3f75a135ec67fc8c # v1.27.0
       with:
         bin: envchain
         target: ${{ inputs.RUST_TARGET }}
