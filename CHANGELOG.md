@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.1.9](https://github.com/okkez/envchain-rs/compare/v0.1.8...v0.1.9) - 2025-06-18
+
+### Fixed
+
+- *(deps)* update rust crate toml to v0.8.23
+- *(deps)* update rust crate toml to v0.8.22
+- *(deps)* pin GitHub Actions exclude dtolnay/rust-toolchain
+
+### Other
+
+- *(deps)* update taiki-e/upload-rust-binary-action action to v1.27.0
+- Merge pull request #68 from okkez/renovate/clap-4.x-lockfile
+- Merge pull request #65 from okkez/renovate/marcoieni-release-plz-action-0.x
+- *(deps)* update marcoieni/release-plz-action action to v0.5.106
+- Merge pull request #60 from okkez/renovate/rpassword-7.x-lockfile
+- Merge pull request #57 from okkez/renovate/clap-4.x-lockfile
+- *(deps)* update marcoieni/release-plz-action action to v0.5.105
+- *(deps)* update taiki-e/setup-cross-toolchain-action action to v1.29.1
+- Merge pull request #49 from okkez/renovate/clap-4.x-lockfile
+- *(deps)* update actions/create-github-app-token action to v2
+
 ## [0.1.8](https://github.com/okkez/envchain-rs/compare/v0.1.7...v0.1.8) - 2025-02-21
 
 ### Other
