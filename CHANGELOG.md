@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.10](https://github.com/okkez/envchain-rs/compare/v0.1.9...v0.1.10) - 2025-06-23
+
+### Other
+
+- *(deps)* update marcoieni/release-plz-action action to v0.5.108
+
 ## [0.1.9](https://github.com/okkez/envchain-rs/compare/v0.1.8...v0.1.9) - 2025-06-18
 
 ### Fixed
