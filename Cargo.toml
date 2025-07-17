@@ -22,7 +22,7 @@ clap = { version = "4", features = ["derive", "wrap_help"] }
 secret-service = { version = "4", features = ["rt-tokio-crypto-rust"] }
 rpassword = "7"
 serde = { version = "1.0.200", features = ["derive"] }
-toml = { version = "0.8" }
+toml = { version = "0.9" }
 anyhow = "1.0.86"
 
 [[bin]]
