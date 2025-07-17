@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.10](https://github.com/okkez/envchain-rs/compare/v0.1.9...v0.1.10) - 2025-07-17
+
+### Fixed
+
+- *(deps)* update rust crate clap to v4.5.41
+
+### Other
+
+- Merge pull request #74 from okkez/renovate/toml-0.x
+- *(deps)* update marcoieni/release-plz-action action to v0.5.108
+
 ## [0.1.9](https://github.com/okkez/envchain-rs/compare/v0.1.8...v0.1.9) - 2025-06-18
 
 ### Fixed
