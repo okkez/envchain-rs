@@ -1,5 +1,30 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [0.1.10](https://github.com/okkez/envchain-rs/compare/v0.1.9...v0.1.10) - 2025-08-13
+
+### Fixed
+
+- *(deps)* update rust crate clap to v4.5.41
+
+### Other
+
+- Merge pull request #82 from okkez/renovate/taiki-e-setup-cross-toolchain-action-1.x
+- Merge pull request #84 from okkez/renovate/actions-checkout-5.x
+- Merge pull request #81 from okkez/renovate/actions-create-github-app-token-2.x
+- *(deps)* update actions/create-github-app-token action to v2.1.1
+- *(deps)* update marcoieni/release-plz-action action to v0.5.110
+- *(deps)* update marcoieni/release-plz-action action to v0.5.109
+- Merge pull request #74 from okkez/renovate/toml-0.x
+- *(deps)* update marcoieni/release-plz-action action to v0.5.108
+# Changelog
+
 ## [0.1.9](https://github.com/okkez/envchain-rs/compare/v0.1.8...v0.1.9) - 2025-06-18
 
 ### Fixed
