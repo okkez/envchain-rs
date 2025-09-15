@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.1.10](https://github.com/okkez/envchain-rs/compare/v0.1.9...v0.1.10) - 2025-09-15
+
+### Fixed
+
+- *(deps)* update rust crate secret-service to v5
+- *(deps)* update rust crate clap to v4.5.46
+- *(deps)* update rust crate clap to v4.5.41
+
+### Other
+
+- Merge pull request #93 from okkez/renovate/marcoieni-release-plz-action-0.x
+- *(deps)* update actions/create-github-app-token action to v2.1.4
+- *(deps)* update marcoieni/release-plz-action action to v0.5.114
+- *(deps)* update marcoieni/release-plz-action action to v0.5.113
+- *(deps)* update taiki-e/setup-cross-toolchain-action action to v1.31.1
+- Merge pull request #85 from okkez/renovate/anyhow-1.x-lockfile
+- Merge pull request #80 from okkez/renovate/toml-0.x-lockfile
+- *(deps)* update marcoieni/release-plz-action action to v0.5.112
+- Merge pull request #82 from okkez/renovate/taiki-e-setup-cross-toolchain-action-1.x
+- Merge pull request #84 from okkez/renovate/actions-checkout-5.x
+- Merge pull request #81 from okkez/renovate/actions-create-github-app-token-2.x
+- *(deps)* update actions/create-github-app-token action to v2.1.1
+- *(deps)* update marcoieni/release-plz-action action to v0.5.110
+- *(deps)* update marcoieni/release-plz-action action to v0.5.109
+- Merge pull request #74 from okkez/renovate/toml-0.x
+- *(deps)* update marcoieni/release-plz-action action to v0.5.108
+
 ## [0.1.9](https://github.com/okkez/envchain-rs/compare/v0.1.8...v0.1.9) - 2025-06-18
 
 ### Fixed
