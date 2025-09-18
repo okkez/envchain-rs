@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.11](https://github.com/okkez/envchain-rs/compare/v0.1.10...v0.1.11) - 2025-09-18
+
+### Other
+
+- *(deps)* update taiki-e/setup-cross-toolchain-action action to v1.32.1
+
 ## [0.1.10](https://github.com/okkez/envchain-rs/compare/v0.1.9...v0.1.10) - 2025-09-15
 
 ### Fixed
