@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.11](https://github.com/okkez/envchain-rs/compare/v0.1.10...v0.1.11) - 2025-09-21
+
+### Fixed
+
+- *(deps)* update rust crate serde to v1.0.226
+- *(deps)* update rust crate clap to v4.5.48
+
+### Other
+
+- Merge pull request #97 from okkez/renovate/toml-0.x-lockfile
+- Merge pull request #101 from okkez/renovate/anyhow-1.x-lockfile
+- *(deps)* update taiki-e/setup-cross-toolchain-action action to v1.32.1
+
 ## [0.1.10](https://github.com/okkez/envchain-rs/compare/v0.1.9...v0.1.10) - 2025-09-15
 
 ### Fixed
