@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.12](https://github.com/okkez/envchain-rs/compare/v0.1.11...v0.1.12) - 2025-09-22
+
+### Fixed
+
+- ignore exec result
+
 ## [0.1.11](https://github.com/okkez/envchain-rs/compare/v0.1.10...v0.1.11) - 2025-09-21
 
 ### Fixed
