@@ -156,7 +156,7 @@ impl<'a> Cli {
             );
         }
         let (exe, args) = command.split_at(1);
-        Command::new(exe[0].clone()).args(args).envs(envs).exec();
+        let _ = Command::new(exe[0].clone()).args(args).envs(envs).exec();
         Ok(())
     }
 
