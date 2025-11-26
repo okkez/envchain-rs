@@ -17,7 +17,7 @@ runs:
       uses: dtolnay/rust-toolchain@stable
       with:
         targets: ${{ inputs.MATRIX_TARGET }}
-    - uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
+    - uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
       with:
         prefix-key: ${{ inputs.RUST_TARGET }}
     - uses: taiki-e/upload-rust-binary-action@3962470d6e7f1993108411bc3f75a135ec67fc8c # v1.27.0
