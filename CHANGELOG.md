@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.13](https://github.com/okkez/envchain-rs/compare/v0.1.12...v0.1.13) - 2025-12-04
+
+### Other
+
+- *(deps)* update actions/checkout action to v6.0.1
+- *(deps)* update swatinem/rust-cache action to v2.8.2
+- Merge pull request #113 from okkez/renovate/actions-checkout-6.x
+- *(deps)* update actions/create-github-app-token action to v2.2.0
+- *(deps)* update actions/checkout action to v5.0.1
+- *(deps)* update rust crate clap to v4.5.51
+- Merge pull request #108 from okkez/renovate/clap-4.x-lockfile
+- Merge pull request #106 from okkez/renovate/toml-0.x-lockfile
+- *(deps)* update marcoieni/release-plz-action action to v0.5.118
+
 ## [0.1.12](https://github.com/okkez/envchain-rs/compare/v0.1.11...v0.1.12) - 2025-09-22
 
 ### Fixed
