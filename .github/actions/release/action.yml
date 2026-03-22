@@ -13,14 +13,12 @@ runs:
   steps:
     - name: Checkout sources
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-    - name: Install stable toolchain
-      uses: dtolnay/rust-toolchain@stable
+    - name: Install Rust toolchain
+      uses: actions-rust-lang/setup-rust-toolchain@150fca883cd4034361b621bd4e6a9d34e5143606 # v1.15.4
       with:
-        targets: ${{ inputs.MATRIX_TARGET }}
-    - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
-      with:
-        prefix-key: ${{ inputs.RUST_TARGET }}
-    - uses: taiki-e/upload-rust-binary-action@0e34102c043ded9f2ca39f7af5cd99a540c61aff # v1.29.1
+        target: ${{ inputs.MATRIX_TARGET }}
+    - name: Upload binary to GitHub Release
+      uses: taiki-e/upload-rust-binary-action@0e34102c043ded9f2ca39f7af5cd99a540c61aff # v1.29.1
       with:
         bin: envchain
         target: ${{ inputs.RUST_TARGET }}
