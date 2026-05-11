@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.14](https://github.com/okkez/envchain-rs/compare/v0.1.13...v0.1.14) - 2026-05-11
+
+### Other
+
+- Merge pull request #152 from okkez/renovate/actions-create-github-app-token-3.x
+- *(deps)* update actions-rust-lang/setup-rust-toolchain action to v1.16.1
+- fix clippy reporter, add permissions, and clean up actions
+- use actions-rust-lang/setup-rust-toolchain
+- *(deps)* update rust crate toml to v1.0.7
+- *(deps)* update actions/create-github-app-token action to v3
+
 ## [0.1.13](https://github.com/okkez/envchain-rs/compare/v0.1.12...v0.1.13) - 2026-03-13
 
 ### Fixed
